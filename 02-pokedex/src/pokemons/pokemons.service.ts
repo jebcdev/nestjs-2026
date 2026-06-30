@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Pokemon } from './entities/pokemon.entity';
 import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
+import { PokemonsPaginationDTO } from './dto';
 
 @Injectable()
 export class PokemonsService {
@@ -31,15 +32,34 @@ export class PokemonsService {
     }
   }
 
-  async findAll() {
+  async findAll(pokemonsPaginationDTO: PokemonsPaginationDTO) {
     try {
-      const pokemons = await this.pokemonsRepository.find();
+      const { take = 10, skip = 0 } = pokemonsPaginationDTO;
+
+      const [pokemons, total] = await this.pokemonsRepository.findAndCount({
+        take,
+        skip,
+        order: { no: 'ASC' },
+      });
 
       if (pokemons.length === 0) {
         throw new NotFoundException('No Pokemons found');
       }
 
-      return pokemons;
+      const currentPage = Math.floor(skip / take) + 1;
+      const totalPages = Math.ceil(total / take);
+
+      return {
+        data: pokemons,
+        pagination: {
+          total,
+          take,skip,
+          currentPage,
+          totalPages,
+          hasNextPage: currentPage < totalPages,
+          hasPreviousPage: currentPage > 1,
+        },
+      };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -75,7 +95,7 @@ export class PokemonsService {
 
   async update(term: string, updatePokemonDto: UpdatePokemonDto) {
     try {
-      const pokemon = await this.findOne(term) as Pokemon;
+      const pokemon = (await this.findOne(term)) as Pokemon;
       const updatedPokemon = await this.pokemonsRepository.preload({
         id: pokemon.id,
         ...updatePokemonDto,
@@ -97,7 +117,7 @@ export class PokemonsService {
 
   async remove(id: string) {
     try {
-      const pokemon = await this.findOne(id) as Pokemon;
+      const pokemon = (await this.findOne(id)) as Pokemon;
       await this.pokemonsRepository.remove(pokemon);
       return pokemon;
     } catch (error) {
