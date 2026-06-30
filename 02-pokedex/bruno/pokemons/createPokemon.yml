@@ -1,0 +1,25 @@
+info:
+  name: createPokemon
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{url}}/pokemons"
+  body:
+    type: json
+    data: |-
+      // {
+      //   "no":1,"name":"Bulbasaur"
+      // }
+
+      {
+        "no":2,"name":"Ivysaur"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

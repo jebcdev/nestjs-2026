@@ -4,6 +4,8 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PokemonsModule } from './pokemons/pokemons.module';
+import { SeederResolver } from './seeder/seeder.resolver';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
   imports: [
@@ -23,9 +25,9 @@ import { PokemonsModule } from './pokemons/pokemons.module';
       autoLoadEntities: true,
       synchronize: true,
       logging: true,
-    }), PokemonsModule,
+    }), PokemonsModule, SeederModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [SeederResolver],
 })
 export class AppModule {}
