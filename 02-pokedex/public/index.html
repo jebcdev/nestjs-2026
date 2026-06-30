@@ -1,14 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokedex API — NestJS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #00ff41;
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* scanlines overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.03) 2px,
+        rgba(0, 255, 65, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* flicker animation */
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+      }
+      20%, 24%, 55% {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; }
+      50% { box-shadow: 0 0 20px #00ff41, 0 0 40px #00ff41; }
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+      z-index: 2;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid #00ff41;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: flicker 3s infinite;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+      text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41;
+    }
+
+    h1 span {
+      animation: blink 1.2s step-end infinite;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #008a22;
+      margin-bottom: 3rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: #00ff41;
+      margin: 0 auto 2.5rem;
+      box-shadow: 0 0 6px #00ff41;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .chip {
+      border: 1px solid #00ff41;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      background: rgba(0, 255, 65, 0.04);
+    }
+
+    .endpoints {
+      text-align: left;
+      margin: 0 auto;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .endpoints .line {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-left: 2px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+      font-size: 0.82rem;
+    }
+
+    .endpoints .line:hover {
+      border-left-color: #00ff41;
+      background: rgba(0, 255, 65, 0.05);
+    }
+
+    .method {
+      font-weight: 700;
+      min-width: 52px;
+      color: #00ff41;
+    }
+
+    .path {
+      color: #b3ffc0;
+    }
+
+    .desc {
+      color: #008a22;
+      margin-left: auto;
+      white-space: nowrap;
+      font-size: 0.72rem;
+    }
+
+    .terminal-prompt {
+      margin-top: 3rem;
+      font-size: 0.78rem;
+      color: #008a22;
+    }
+
+    .terminal-prompt .cursor {
+      animation: blink 1s step-end infinite;
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.65rem;
+      color: #005f11;
+      z-index: 2;
+      padding-bottom: 2rem;
+    }
+
+    a {
+      color: #00ff41;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 540px) {
+      h1 { font-size: 1.8rem; }
+      .endpoints .line { flex-wrap: wrap; gap: 0.3rem; }
+      .desc { margin-left: 0; white-space: normal; }
+    }
+  </style>
 </head>
-
 <body>
-    Pokedex
-</body>
+  <div class="container">
+    <div class="badge">NestJS &mdash; v11</div>
 
+    <h1>Pokedex API<span>_</span></h1>
+    <div class="subtitle">REST API &middot; TypeORM &middot; PostgreSQL</div>
+    <div class="divider"></div>
+
+    <div class="stack">
+      <span class="chip">NestJS 11</span>
+      <span class="chip">TypeORM</span>
+      <span class="chip">PostgreSQL</span>
+      <span class="chip">class-validator</span>
+      <span class="chip">pnpm</span>
+      <span class="chip">Bruno</span>
+    </div>
+
+    <div class="endpoints">
+      <div class="line">
+        <span class="method">GET</span>
+        <span class="path">/api/v1/pokemons</span>
+        <span class="desc">list all (paginated)</span>
+      </div>
+      <div class="line">
+        <span class="method">GET</span>
+        <span class="path">/api/v1/pokemons/:id</span>
+        <span class="desc">get by UUID</span>
+      </div>
+      <div class="line">
+        <span class="method">POST</span>
+        <span class="path">/api/v1/pokemons</span>
+        <span class="desc">create</span>
+      </div>
+      <div class="line">
+        <span class="method">PATCH</span>
+        <span class="path">/api/v1/pokemons/:id</span>
+        <span class="desc">update</span>
+      </div>
+      <div class="line">
+        <span class="method">DELETE</span>
+        <span class="path">/api/v1/pokemons/:id</span>
+        <span class="desc">remove</span>
+      </div>
+      <div class="line">
+        <span class="method">POST</span>
+        <span class="path">/api/v1/seeder/pokemons</span>
+        <span class="desc">seed 150 pok&eacute;mon</span>
+      </div>
+    </div>
+
+    <div class="terminal-prompt">
+      <span style="color:#00ff41;">guest@jebcdev</span><span style="color:#008a22;">:</span><span style="color:#b3ffc0;">~</span><span style="color:#008a22;">$</span> curl http://localhost:3000/api/v1/pokemons?take=5<span class="cursor">_</span>
+    </div>
+  </div>
+
+  <footer>
+    <a href="https://nestjs.com" target="_blank">NestJS</a> &nbsp;&bull;&nbsp;
+    <a href="https://github.com" target="_blank">GitHub</a> &nbsp;&bull;&nbsp;
+    Built with &#x3c3; by devtalles
+  </footer>
+</body>
 </html>
