@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { join } from 'path';
 import { CarsModule } from './cars/cars.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { CarsModule } from './cars/cars.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CarsModule, // const envVar = this.configService.get<string>('envVar');
+    CarsModule,
+    BrandsModule, // const envVar = this.configService.get<string>('envVar');
   ],
   controllers: [],
   providers: [],

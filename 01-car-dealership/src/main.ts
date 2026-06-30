@@ -50,7 +50,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(PORT);
+  void app.listen(PORT);
   logger.log(
     `Application is running on: http://localhost:${PORT}/${API_PREFIX}`,
   );

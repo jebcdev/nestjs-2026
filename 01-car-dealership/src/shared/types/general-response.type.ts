@@ -2,19 +2,14 @@ import { HttpStatus } from '@nestjs/common';
 
 export type GeneralResponse<T = undefined> =
   | {
-      statusCode: HttpStatus.OK | HttpStatus.CREATED | HttpStatus.ACCEPTED; // Solo status exitosos
-      success: true;
-      error?: false;
       message: string;
+      error: null;
+      statusCode: HttpStatus;
       data: T;
     }
   | {
-      statusCode: Exclude<
-        HttpStatus,
-        HttpStatus.OK | HttpStatus.CREATED | HttpStatus.ACCEPTED
-      >; // Cualquier status excepto los exitosos
-      success: false;
-      error: true;
       message: string;
+      error: string;
+      statusCode: HttpStatus;
       data?: never;
     };

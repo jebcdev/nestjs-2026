@@ -1,0 +1,22 @@
+info:
+  name: createNewCar
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/api/v1/cars/
+  body:
+    type: json
+    data: |-
+      {
+        "brand":"ojo pues",
+        "model":"Corolla"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
