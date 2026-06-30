@@ -4,7 +4,6 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PokemonsModule } from './pokemons/pokemons.module';
-import { SeederResolver } from './seeder/seeder.resolver';
 import { SeederModule } from './seeder/seeder.module';
 
 @Module({
@@ -28,6 +27,6 @@ import { SeederModule } from './seeder/seeder.module';
     }), PokemonsModule, SeederModule,
   ],
   controllers: [],
-  providers: [SeederResolver],
+  providers: [],
 })
 export class AppModule {}
