@@ -1,0 +1,22 @@
+info:
+  name: updateCar
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: http://localhost:3000/api/v1/cars/1
+  body:
+    type: json
+    data: |-
+      {
+        "brand":"Toyota",
+        "model":"Hilux"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,21 @@
+info:
+  name: updateBrand
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: http://localhost:3000/api/v1/brands/1
+  body:
+    type: json
+    data: |-
+      {
+        "name":"Toyota"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
